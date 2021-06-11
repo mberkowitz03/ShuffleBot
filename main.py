@@ -67,8 +67,9 @@ async def on_message(message):
         msg += word + ' '
       else:
         msg += word[0] + sub + word[index:len(word)] + ' '
-      
-    await message.channel.send(msg)
+    name = "**" + message.author.name + "**"
+    await message.delete()
+    await message.channel.send(name + ' - ' + msg)
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
