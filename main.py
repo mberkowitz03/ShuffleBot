@@ -35,7 +35,6 @@ async def on_message(message):
     await message.channel.send(commandsList)
   
   elif message.content.startswith(symbol + "shuffle"):
-    global server_shuffles
     if server_shuffles[message.guild.name] == True:
       server_shuffles[message.guild.name] = False
       await message.channel.send(randomPhrase(endList))
@@ -44,13 +43,17 @@ async def on_message(message):
       await message.channel.send(randomPhrase(startList))
 
   elif message.content.startswith(symbol + "mock"):
-    global server_mocks
     if server_mocks[message.guild.name] == True:
       server_mocks[message.guild.name] = False
       await message.channel.send(randomPhrase(endList))
     else:
       server_mocks[message.guild.name] = True
       await message.channel.send(randomPhrase(startList))
+    
+  elif message.content.startswith(symbol + "adios"):
+    server_mocks[message.guild.name] = False
+    server_shuffles[message.guild.name] = False
+    await message.channel.send(randomPhrase(endList))
 
   else:   
     msg = ""
