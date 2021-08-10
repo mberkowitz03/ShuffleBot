@@ -29,13 +29,13 @@ async def on_ready():
 async def on_message(message):
   await client.wait_until_ready()
   if message.author == client.user: # don't react to own messages
-    return     
+    return 
 
   if message.content.startswith(symbol + "help"): # display all commands
     await message.channel.send(commandsList)
   
   elif message.content.startswith(symbol + "shuffle"):
-    if server_shuffles[message.guild.name] == True:
+    if server_shuffles[message.guild.name]:
       server_shuffles[message.guild.name] = False
       await message.channel.send(randomPhrase(endList))
     else:
@@ -43,7 +43,7 @@ async def on_message(message):
       await message.channel.send(randomPhrase(startList))
 
   elif message.content.startswith(symbol + "mock"):
-    if server_mocks[message.guild.name] == True:
+    if server_mocks[message.guild.name]:
       server_mocks[message.guild.name] = False
       await message.channel.send(randomPhrase(endList))
     else:
@@ -71,36 +71,37 @@ async def on_message(message):
       else:
         wordList = msg.split()
         msg = ""
+
       sub = ""
       for word in wordList:
-        index = len(word)
-        if re.search("\.|,|!|\?", word) != None:
-          done = False
-          while done != True:
-            checkWord = word[1 : index]
-            if re.search("\.|,|!|\?", checkWord) != None:
-              index = index - 1
-            else:
-              done = True
-          sub = word[1 : index - 1]
-        else:
-          sub = word[1 : index - 1]
-          
-        subList = [char for char in sub]
-        random.shuffle(subList)
-        sub = ''.join(subList)
-        #potential if statement here if the following line fails when index == length
         if len(word) == 1:
-          msg += word + ' '
+          msg += word
         else:
-          msg += word[0] + sub + word[index - 1:len(word)] + ' '
+          index = len(word)
+          if re.search("\.|,|!|\?", word) != None:
+            done = False
+            while not done:
+              checkWord = word[1 : index]
+              if re.search("\.|,|!|\?", checkWord) != None:
+                index -= 1
+              else:
+                done = True
+
+          sub = word[1 : index - 1]
+            
+          subCharList = [char for char in sub]
+          random.shuffle(subCharList)
+          sub = ''.join(subCharList)
+          
+          msg += word[0] + sub + word[index - 1:len(word)]
+        msg += ' '
       await message.delete()
 
-    if server_shuffles[message.guild.name] == True:
+    if server_shuffles[message.guild.name]:
       name = "**" + message.author.name + "**"
       await message.channel.send(name + ' - ' + msg)
-    elif server_mocks[message.guild.name] == True:
-      await message.channel.send("\"" + msg + "\"")
+    elif server_mocks[message.guild.name]:
+      await message.channel.send('\"' + msg + '\"')
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
